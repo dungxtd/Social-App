@@ -11,19 +11,19 @@ import PostScreen from '../screens/PostScreen'
 export default function MainStackScreen() {
     const MainStack = createBottomTabNavigator();
 
-    // const tabBarOptions = {
-    //     showLabel: false,
-    //     style: {
-    //         backgroundColor: '#222222',
-    //         paddingBottom: 12,
-    //     }
-    // }
+    const tabBarOptions = {
+        showLabel: false,
+        style: {
+            backgroundColor: '#222222',
+            paddingBottom: 12,
+        }
+    }
 
-    // const screenOptions = (({ route }) => ({
-    //     tabBarIcons: ({ focused }) => {
-    //         let iconName = "home"
-    //     }
-    // }))
+    const screenOptions = (({ route }) => ({
+        tabBarIcons: ({ focused }) => {
+            let iconName = "home"
+        }
+    }))
 
     return (
         <MainStack.Navigator >

@@ -1,13 +1,13 @@
 import React, { useState, createContext } from 'react';
 
-const UserContext = createContext([{}, () => { }])
+const UserContext = createContext([{}, () => { }]);
 
 const UserProvider = (props) => {
     const [state, setState] = useState({
         username: "",
         email: "",
         uid: "",
-        isLoggedIn: true,
+        isLoggedIn: null,
         profilePhotoUrl: "default",
     })
 
