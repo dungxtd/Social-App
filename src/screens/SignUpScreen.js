@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import styled from 'styled-components/native'
 import { View, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import Text from "../components/Text"
@@ -8,6 +8,9 @@ import Platform from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { log } from 'react-native-reanimated';
 
+import { FirebaseContext } from '../context/FirebaseContext'
+import { UserContext } from '../context/UserContext'
+
 
 export default function SignInScreen({ navigation }) {
     const [username, setUsername] = useState();
@@ -15,6 +18,9 @@ export default function SignInScreen({ navigation }) {
     const [password, setPassword] = useState();
     const [loading, setLoading] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState();
+    const firebase = useContext(FirebaseContext);
+    const [_, setUser] = useContext(UserContext);
+
     const getPermission = async () => {
         if (Platform.OS !== 'web') {
             const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
@@ -46,6 +52,24 @@ export default function SignInScreen({ navigation }) {
         }
     }
 
+    const signUp = async () => {
+        setLoading(true)
+        const user = { username, email, password }
+
+        try {
+
+            const createUser = await firebase.createUser(user);
+
+            setUser({ ...createUser, isLoggedIn: true })
+
+
+        } catch (error) {
+            console.log("Error @SignUp: ", error);
+        } finally {
+            setLoading = false;
+        }
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -65,7 +89,7 @@ export default function SignInScreen({ navigation }) {
                         <TextInput style={styles.authField}
                             autoCapitalize="none"
                             autoCorrect={false}
-                            autoFocus={true}
+                            // autoFocus={true}
                             onChangeText={(username) => setUsername(username.trim())}
                             value={username}
                         ></TextInput>
@@ -92,7 +116,7 @@ export default function SignInScreen({ navigation }) {
                             value={password}
                         ></TextInput>
                     </View>
-                    <TouchableOpacity disabled={loading} style={styles.signInContainer} onPress={addProfilePhoto}>
+                    <TouchableOpacity disabled={loading} style={styles.signInContainer} onPress={signUp}>
                         {loading ? (
                             <Loading />
                         ) : (
