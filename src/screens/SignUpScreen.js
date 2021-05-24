@@ -66,7 +66,7 @@ export default function SignInScreen({ navigation }) {
         } catch (error) {
             console.log("Error @SignUp: ", error);
         } finally {
-            setLoading = false;
+            setLoading(false);
         }
     }
 

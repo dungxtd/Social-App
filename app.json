@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "socialApp",
+    "name": "Social App",
     "slug": "socialApp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,6 +27,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "by dungxtd",
+    "githubUrl": "https://github.com/dungxtd/Social-App.git"
   }
 }
