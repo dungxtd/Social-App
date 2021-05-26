@@ -1,4 +1,5 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
+import * as React from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, TextInput } from 'react-native'
 import { UserContext } from '../context/UserContext'
 import { FirebaseContext } from '../context/FirebaseContext'
@@ -7,7 +8,7 @@ import * as Permissions from 'expo-permissions';
 import Platform from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-export default function EditProfileScreen(props) {
+export default function EditProfileScreen({ navigation }) {
     const [user, setUser] = useContext(UserContext)
     const firebase = useContext(FirebaseContext)
     const [email, setEmail] = useState(user.email);
@@ -15,18 +16,39 @@ export default function EditProfileScreen(props) {
     const [profilePhoto, setProfilePhoto] = useState(user.profilePhotoUrl);
     const uid = useState(user.uid);
 
-    const editProfile = async () => {
-        await addProfilePhoto();
-        try {
-            console.log(profilePhoto)
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            title: 'Edit Profile',
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+                fontSize: 17,
+            },
+            headerStyle: {
+                backgroundColor: 'white',
+                elevation: 0,
+            },
+            headerBackTitleVisible: false,
+            headerBackImage: () => (
+                <View style={{ marginLeft: 10 }}>
+                    <TouchableOpacity style={{ marginRight: 20 }}>
+                        <Text medium>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
+            ),
+            headerRight: () => (
+                <TouchableOpacity
+                    style={{ marginRight: 20 }}
+                    onPress={() => updateProfile()}
+                >
+                    <Text bold medium color={'#40a0ed'}>Done</Text>
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation, updateProfile]);
 
-            // console.log(user.profilePhotoUrl)
-        } catch (error) {
-            console.log("Error @updateProfile: ", error);
-        } finally {
-            // setLoading(false);
-            console.log(user.profilePhotoUrl)
-        }
+    const updateProfile = async () => {
+        const userUpdate = await { username }
+        await firebase.updateProfile(userUpdate);
     }
 
     const getPermission = async () => {
@@ -41,8 +63,7 @@ export default function EditProfileScreen(props) {
             alert("We need permission to access your camera roll.")
             return;
         }
-        await pickImage();
-
+        pickImage();
     }
     const pickImage = async () => {
         try {
@@ -50,12 +71,10 @@ export default function EditProfileScreen(props) {
                 mediaType: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [1, 1],
-                quality: 0.8,
+                quality: 1,
             })
             if (!result.cancelled) {
                 setProfilePhoto(result.uri)
-                user.profilePhotoUrl = firebase.uploadProfilePhoto(profilePhoto);
-                console.log(user.profilePhotoUrl)
             }
         } catch (err) {
             console.log("Error @pickerImage: ", err);
@@ -95,7 +114,6 @@ export default function EditProfileScreen(props) {
                     style={styles.labelOptionInformation}
                     value={username}
                     fontSize={16}
-
                     onChangeText={(username) => setUsername(username.trim())} />
             </View>
             <View style={styles.wrapShortLine}>

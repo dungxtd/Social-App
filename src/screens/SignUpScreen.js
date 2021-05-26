@@ -21,36 +21,6 @@ export default function SignUpScreen({ navigation }) {
     const firebase = useContext(FirebaseContext);
     const [_, setUser] = useContext(UserContext);
 
-    const getPermission = async () => {
-        if (Platform.OS !== 'web') {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
-            return status;
-        }
-    }
-    const addProfilePhoto = async () => {
-        const status = await getPermission();
-        if (status !== "granted") {
-            alert("We need permission to access your camera roll.")
-            return;
-        }
-        pickImage();
-    }
-    const pickImage = async () => {
-        try {
-            let result = await ImagePicker.launchImageLibraryAsync({
-                mediaType: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
-            })
-            if (!result.cancelled) {
-                setProfilePhoto(result.uri)
-            }
-        } catch (err) {
-            console.log("Error @pickerImage: ", err);
-        }
-    }
-
     const signUp = async () => {
         setLoading(true)
         const user = { username, email, password, profilePhoto }

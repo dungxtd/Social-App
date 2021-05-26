@@ -96,30 +96,7 @@ const ProfileStackScreen = ({ navigation }) => (
         <ProfileStack.Screen
             name="EditProfile"
             component={EditProfileScreen}
-            options={{
-                title: 'Edit Profile',
-                headerTitleAlign: 'center',
-                headerTitleStyle: {
-                    fontSize: 17,
-                },
-                headerStyle: {
-                    backgroundColor: 'white',
-                    elevation: 0,
-                },
-                headerBackTitleVisible: false,
-                headerBackImage: () => (
-                    <View style={{ marginLeft: 10 }}>
-                        <TouchableOpacity style={{ marginRight: 20 }}>
-                            <Text medium>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
-                ),
-                headerRight: () => (
-                    <TouchableOpacity style={{ marginRight: 20 }}>
-                        <Text bold medium color={'#40a0ed'}>Done</Text>
-                    </TouchableOpacity>
-                ),
-            }}
+            options={({ navigation, route }) => ({})}
         />
     </ProfileStack.Navigator>
 );

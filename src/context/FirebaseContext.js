@@ -22,41 +22,34 @@ const Firebase = {
         try {
             await firebase.auth().createUserWithEmailAndPassword(user.email, user.password);
             const uid = Firebase.getCurrentUser().uid
-
             let profilePhotoUrl = "default";
-
             await db.collection("users").doc(uid).set({
                 username: user.username,
                 email: user.email,
                 profilePhotoUrl
-
             })
-
             if (user.profilePhoto) {
-                // profilePhotoUrl = await Firebase.uploadProfilePhoto(user.profilePhoto);
+                profilePhotoUrl = await Firebase.uploadProfilePhoto(user.profilePhoto);
             }
-
             delete user.password
-
             return { ...user, profilePhotoUrl, uid }
-
         } catch (error) {
             console.log("Error @CreateUser", error.message);
         }
 
     },
-
     uploadProfilePhoto: async (uri) => {
         const uid = Firebase.getCurrentUser().uid;
         try {
             const photo = await Firebase.getBlob(uri)
             const imageRef = firebase.storage().ref("profilePhotos").child('IMG_' + Math.random(4000))
             await imageRef.put(photo)
-            const url = await imageRef.getDownloadURL()
+            const url = await imageRef.getDownloadURL();
             await db.collection("users").doc(uid).update({
-                profilePhotoUrl: url
-            })
-            return url
+                profilePhotoUrl: url,
+            });
+            console.log(url)
+            return url;
         } catch (error) {
             console.log("Error @UploadProfilePhoto: ", error.message);
         }
@@ -104,6 +97,18 @@ const Firebase = {
 
     signIn: async (email, password) => {
         return firebase.auth().signInWithEmailAndPassword(email, password);
+    },
+
+
+    updateProfile: async (user) => {
+        const uid = Firebase.getCurrentUser().uid;
+        await db.collection("users").doc(uid).update({
+            username: user.username,
+            // profilePhotoUrl: user.profilePhotoUrl,
+        }).finally(
+            console.log(user)
+        )
+        // return { ...user, profilePhotoUrl, uid }
     }
 };
 

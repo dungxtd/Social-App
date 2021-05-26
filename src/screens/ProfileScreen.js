@@ -20,7 +20,7 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <View style={styles.profileUsernameTitle}>
-                    <Text medium bold center >{user.username}</Text>
+                    <Text medium bold center> {user.username} </Text>
                     <MaterialIcons name={'verified'} size={16} color={'#40a0ed'} style={{ paddingTop: 2 }} />
                 </View>
                 <View style={styles.profileInfoContainer}>
