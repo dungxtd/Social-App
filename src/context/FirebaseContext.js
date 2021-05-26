@@ -33,7 +33,7 @@ const Firebase = {
             })
 
             if (user.profilePhoto) {
-
+                // profilePhotoUrl = await Firebase.uploadProfilePhoto(user.profilePhoto);
             }
 
             delete user.password
@@ -49,18 +49,13 @@ const Firebase = {
     uploadProfilePhoto: async (uri) => {
         const uid = Firebase.getCurrentUser().uid;
         try {
-
             const photo = await Firebase.getBlob(uri)
-
-            const imageRef = firebase.storage().ref("profilePhotos").child(uid)
+            const imageRef = firebase.storage().ref("profilePhotos").child('IMG_' + Math.random(4000))
             await imageRef.put(photo)
-
             const url = await imageRef.getDownloadURL()
-
             await db.collection("users").doc(uid).update({
                 profilePhotoUrl: url
             })
-
             return url
         } catch (error) {
             console.log("Error @UploadProfilePhoto: ", error.message);
@@ -73,11 +68,9 @@ const Firebase = {
             xhr.onload = () => {
                 resolve(xhr.response)
             }
-
             xhr.onerror = () => {
                 reject(new TypeError("Network require failed."))
             }
-
             xhr.responseType = 'blob'
             xhr.open('GET', uri, true)
             xhr.send(null)

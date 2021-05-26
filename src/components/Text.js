@@ -34,7 +34,7 @@ const Text = styled.Text`
         }
     }
     }
-    ${({ light, semi, bold, heavy }) => {
+    ${({ light, semi, bold, heavy, post }) => {
         switch (true) {
             case light:
                 return 'font-weight: 200;';
@@ -47,6 +47,9 @@ const Text = styled.Text`
 
             case heavy:
                 return 'font-weight: 700;';
+
+            case post:
+                return 'font-weight: 500;';
 
             default:
                 return 'font-weight: 400;';

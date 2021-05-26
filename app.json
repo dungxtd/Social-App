@@ -17,7 +17,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Enable Camera Acess so that you can record  Videos",
+        "NSMicrophoneUsageDescription": "Enable Microphone Access so that you can start recording audio ",
+        "NSPhotoLibraryUsageDescription": "Enable Camera Roll Access so that you can select Other Videos from Camera Roll"
+      }
     },
     "android": {
       "adaptiveIcon": {

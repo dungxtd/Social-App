@@ -12,7 +12,7 @@ import { FirebaseContext } from '../context/FirebaseContext'
 import { UserContext } from '../context/UserContext'
 
 
-export default function SignInScreen({ navigation }) {
+export default function SignUpScreen({ navigation }) {
     const [username, setUsername] = useState();
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
@@ -26,7 +26,6 @@ export default function SignInScreen({ navigation }) {
             const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
             return status;
         }
-
     }
     const addProfilePhoto = async () => {
         const status = await getPermission();
@@ -54,15 +53,10 @@ export default function SignInScreen({ navigation }) {
 
     const signUp = async () => {
         setLoading(true)
-        const user = { username, email, password }
-
+        const user = { username, email, password, profilePhoto }
         try {
-
             const createUser = await firebase.createUser(user);
-
             setUser({ ...createUser, isLoggedIn: true })
-
-
         } catch (error) {
             console.log("Error @SignUp: ", error);
         } finally {
@@ -86,7 +80,8 @@ export default function SignInScreen({ navigation }) {
                 <View style={styles.auth}>
                     <View style={styles.authContainer}>
                         <Text style={styles.authTitle}>User name</Text>
-                        <TextInput style={styles.authField}
+                        <TextInput
+                            style={styles.authField}
                             autoCapitalize="none"
                             autoCorrect={false}
                             // autoFocus={true}

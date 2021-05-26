@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react'
 import styled from 'styled-components/native'
-import { View, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, TextInput, TouchableOpacity, Keyboard } from 'react-native';
 import Text from "../components/Text"
 import HelloImage from '../../assets/hello.png';
 import { FirebaseContext } from '../context/FirebaseContext'
 import { UserContext } from '../context/UserContext'
+import InputScrollView from 'react-native-input-scroll-view';
 
 
 export default function SignInScreen({ navigation }) {
@@ -18,7 +19,6 @@ export default function SignInScreen({ navigation }) {
         setLoading(true);
         try {
             await firebase.signIn(email, password);
-
 
             const uid = firebase.getCurrentUser().uid;
 
@@ -52,6 +52,7 @@ export default function SignInScreen({ navigation }) {
                 <View style={styles.auth}>
                     <View style={styles.authContainer}>
                         <Text style={styles.authTitle}>Email address</Text>
+
                         <TextInput style={styles.authField}
                             autoCompleteType="email"
                             autoCapitalize="none"
@@ -71,6 +72,7 @@ export default function SignInScreen({ navigation }) {
                             secureTextEntry={true}
                             onChangeText={(password) => setPassword(password.trim())}
                             value={password}
+                            onSubmitEditing={Keyboard.dismiss}
                         ></TextInput>
                     </View>
                     <TouchableOpacity onPress={signIn} disabled={loading} style={styles.signInContainer}>
