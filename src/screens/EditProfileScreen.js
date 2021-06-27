@@ -1,4 +1,5 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
+import styled from 'styled-components/native'
 import * as React from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, TextInput } from 'react-native'
 import { UserContext } from '../context/UserContext'
@@ -9,13 +10,11 @@ import Platform from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function EditProfileScreen({ navigation }) {
-    const [user, setUser] = useContext(UserContext)
+    const [loading, setLoading] = useState(false);
     const firebase = useContext(FirebaseContext)
-    const [email, setEmail] = useState(user.email);
-    const [username, setUsername] = useState(user.username);
-    const [profilePhoto, setProfilePhoto] = useState(user.profilePhotoUrl);
-    const uid = useState(user.uid);
-
+    const [user, setUser] = useContext(UserContext);
+    const [userUpdate, setUserUpdate] = useState({ ...user });
+    //const [userData, setUserData] = useState(null);
     React.useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Edit Profile',
@@ -30,41 +29,48 @@ export default function EditProfileScreen({ navigation }) {
             headerBackTitleVisible: false,
             headerBackImage: () => (
                 <View style={{ marginLeft: 10 }}>
-                    <TouchableOpacity style={{ marginRight: 20 }}>
+                    <TouchableOpacity style={{ marginRight: 20 }} disabled={loading}>
                         <Text medium>Cancel</Text>
                     </TouchableOpacity>
                 </View>
             ),
-            headerRight: () => (
-                <TouchableOpacity
-                    style={{ marginRight: 20 }}
-                    onPress={() => updateProfile()}
-                >
-                    <Text bold medium color={'#40a0ed'}>Done</Text>
-                </TouchableOpacity>
-            ),
+            // headerRight: () => (
+            //     <TouchableOpacity
+            //         style={{ marginRight: 20 }}
+            //         onPress={() => updateProfile()}
+            //     >
+            //         <Text bold medium color={'#40a0ed'}>Done</Text>
+            //     </TouchableOpacity>
+            // ),
         });
     }, [navigation, updateProfile]);
 
     const updateProfile = async () => {
-        const userUpdate = await { username }
-        await firebase.updateProfile(userUpdate);
+        setLoading(true);
+        try {
+            var profilePhotoUrl = await firebase.uploadProfilePhoto(userUpdate.profilePhotoUrl);
+            await setUserUpdate({ ...userUpdate, profilePhotoUrl: profilePhotoUrl })
+            console.log(userUpdate);
+            await firebase.updateProfile(userUpdate);
+            setUser(userUpdate);
+        } catch (error) {
+            console.log("Error @updateProfile: ", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const getPermission = async () => {
-        if (Platform.OS !== 'web') {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
-            return status;
-        }
-    }
-    const addProfilePhoto = async () => {
-        const status = await getPermission();
-        if (status !== "granted") {
-            alert("We need permission to access your camera roll.")
-            return;
-        }
-        pickImage();
-    }
+    useEffect(() => {
+        (async () => {
+            if (Platform.OS !== 'web') {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                    alert('Sorry, we need camera roll permissions to make this work!');
+                }
+            }
+        })();
+    }, [])
+
     const pickImage = async () => {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
@@ -74,7 +80,7 @@ export default function EditProfileScreen({ navigation }) {
                 quality: 1,
             })
             if (!result.cancelled) {
-                setProfilePhoto(result.uri)
+                setUserUpdate({ ...userUpdate, profilePhotoUrl: (result.uri) })
             }
         } catch (err) {
             console.log("Error @pickerImage: ", err);
@@ -85,12 +91,12 @@ export default function EditProfileScreen({ navigation }) {
         <View style={styles.container}>
             <View style={styles.profilePhotoContainer}>
                 {<Image />}
-                <Image style={styles.profilePhoto} source={user.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
+                <Image style={styles.profilePhoto} source={userUpdate.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
                     : {
-                        uri: user.profilePhotoUrl
+                        uri: userUpdate.profilePhotoUrl
                     }} />
             </View>
-            <TouchableOpacity style={{ marginTop: 10 }} onPress={addProfilePhoto}>
+            <TouchableOpacity style={{ marginTop: 10 }} onPress={pickImage}>
                 <Text small bold color="#40a0ed">Change Profile Photo</Text>
             </TouchableOpacity>
             <View style={styles.wrapLongLine}>
@@ -100,10 +106,11 @@ export default function EditProfileScreen({ navigation }) {
                 <Text medium style={styles.titleOptionInformation}>Name</Text>
                 <TextInput
                     style={styles.labelOptionInformation}
-                    value={email}
                     fontSize={16}
                     fontWeight={'400'}
-                    onChangeText={(email) => setEmail(email.trim())} />
+                    value={userUpdate ? userUpdate.name : ''}
+                    onChangeText={(txt) => setUserUpdate({ ...userUpdate, name: txt })}
+                />
             </View>
             <View style={styles.wrapShortLine}>
                 <View style={styles.shortLine}></View>
@@ -112,9 +119,10 @@ export default function EditProfileScreen({ navigation }) {
                 <Text medium style={styles.titleOptionInformation}>Username</Text>
                 <TextInput
                     style={styles.labelOptionInformation}
-                    value={username}
                     fontSize={16}
-                    onChangeText={(username) => setUsername(username.trim())} />
+                    value={userUpdate ? userUpdate.username : ''}
+                    onChangeText={(txt) => setUserUpdate({ ...userUpdate, username: txt })}
+                />
             </View>
             <View style={styles.wrapShortLine}>
                 <View style={styles.shortLine}></View>
@@ -123,10 +131,11 @@ export default function EditProfileScreen({ navigation }) {
                 <Text medium style={styles.titleOptionInformation}>Bio</Text>
                 <TextInput
                     style={styles.labelOptionInformation}
-                    value={email}
                     fontSize={16}
                     fontWeight={'400'}
-                    onChangeText={(email) => setEmail(email.trim())} />
+                    value={userUpdate ? userUpdate.bio : ''}
+                    onChangeText={(txt) => setUserUpdate({ ...userUpdate, bio: txt })}
+                />
             </View>
             <View style={styles.wrapShortLine}>
                 <View style={styles.shortLine}></View>
@@ -135,14 +144,22 @@ export default function EditProfileScreen({ navigation }) {
                 <Text medium style={styles.titleOptionInformation}>Email</Text>
                 <TextInput
                     style={styles.labelOptionInformation}
-                    value={email}
                     fontSize={16}
                     fontWeight={'400'}
-                    onChangeText={(email) => setEmail(email.trim())} />
+                    value={userUpdate ? userUpdate.email : ''}
+                    onChangeText={(txt) => setUserUpdate({ ...userUpdate, email: txt })}
+                />
             </View>
             <View style={styles.wrapLongLine}>
                 <View style={styles.longLine}></View>
             </View>
+            <TouchableOpacity style={styles.buttonDone} disabled={loading} onPress={updateProfile} >
+                {loading ? (
+                    <Loading />
+                ) : (
+                    <Text medium bold color="#40a0ed">Done</Text>
+                )}
+            </TouchableOpacity>
         </View>
     )
 }
@@ -208,4 +225,18 @@ const styles = StyleSheet.create({
         borderColor: "#dedede",
         borderBottomWidth: 0.5,
     },
+    buttonDone: {
+        width: '100%',
+        height: 36,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: "#dedede",
+        borderWidth: 1,
+        borderRadius: 6,
+        marginTop: 16,
+    },
 })
+const Loading = styled.ActivityIndicator.attrs(props => ({
+    color: '#111',
+    size: 'small',
+}))``;

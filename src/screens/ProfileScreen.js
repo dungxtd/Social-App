@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native'
 import Text from '../components/Text'
 import { Entypo, Ionicons, Feather, MaterialIcons } from '@expo/vector-icons'
@@ -16,6 +16,27 @@ export default function ProfileScreen({ navigation }) {
         }
     }
 
+    // useEffect(() => {
+    //     setTimeout(async () => {
+    //         const user = firebase.getCurrentUser();
+    //         if (user) {
+    //             const userInfo = await firebase.getUserInfo(user.uid);
+    //             setUser({
+    //                 isLoggedIn: true,
+    //                 email: userInfo.email,
+    //                 uid: user.uid,
+    //                 bio: userInfo.bio,
+    //                 name: userInfo.name,
+    //                 posts: userInfo.posts,
+    //                 followers: userInfo.followers,
+    //                 following: userInfo.following,
+    //                 username: userInfo.username,
+    //                 profilePhotoUrl: userInfo.profilePhotoUrl
+    //             })
+    //         }
+    //     }, 500)
+    // }, [])
+
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
@@ -32,15 +53,15 @@ export default function ProfileScreen({ navigation }) {
                     </View>
                     <View style={styles.startsContainer}>
                         <View style={styles.startContainer}>
-                            <Text bold center>0</Text>
+                            <Text bold center>{user.posts}</Text>
                             <Text center small>Posts</Text>
                         </View>
                         <View style={styles.startContainer}>
-                            <Text bold center>1000</Text>
+                            <Text bold center>{user.followers}</Text>
                             <Text center small>Followers</Text>
                         </View>
                         <View style={styles.startContainer}>
-                            <Text bold center>0</Text>
+                            <Text bold center>{user.following}</Text>
                             <Text center small>Following</Text>
                         </View>
                     </View>
@@ -49,8 +70,8 @@ export default function ProfileScreen({ navigation }) {
                     <View style={styles.postLine}></View>
                 </View> */}
                 <View style={styles.profileNameAndDescription}>
-                    <Text bold>Dũng</Text>
-                    <Text style={{ paddingTop: 2 }}>dep zai tuyet voi</Text>
+                    <Text bold>{user.name}</Text>
+                    <Text style={{ paddingTop: 2, }}>{user.bio}</Text>
                 </View>
                 <TouchableOpacity style={styles.buttonEditProfile} onPress={() => {
                     navigation.navigate("EditProfile")
@@ -61,7 +82,7 @@ export default function ProfileScreen({ navigation }) {
                     <View style={styles.profileLine}></View>
                 </View>
             </View>
-            <TouchableOpacity onPress={logOut} >
+            <TouchableOpacity style={styles.buttonEditProfile} onPress={logOut} >
                 <Text medium bold color="red">Log out</Text>
             </TouchableOpacity>
 
@@ -142,7 +163,7 @@ const styles = StyleSheet.create({
         borderColor: "#dedede",
         borderWidth: 1,
         borderRadius: 6,
-        marginTop: 36,
+        marginTop: 16,
     },
     wrapProfileLine: {
         marginTop: 24,

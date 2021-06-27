@@ -27,10 +27,14 @@ export default function SignInScreen({ navigation }) {
             setUser({
                 username: userInfo.username,
                 email: userInfo.email,
+                bio: userInfo.bio,
+                name: userInfo.name,
+                posts: userInfo.posts,
+                followers: userInfo.followers,
+                following: userInfo.following,
                 uid,
                 profilePhotoUrl: userInfo.profilePhotoUrl,
                 isLoggedIn: true,
-
             })
         } catch (error) {
             alert(error.message);

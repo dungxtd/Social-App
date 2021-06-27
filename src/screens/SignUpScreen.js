@@ -23,7 +23,7 @@ export default function SignUpScreen({ navigation }) {
 
     const signUp = async () => {
         setLoading(true)
-        const user = { username, email, password, profilePhoto }
+        const user = { username, email, password, profilePhoto, posts: 0, followers: 0, following: 0 }
         try {
             const createUser = await firebase.createUser(user);
             setUser({ ...createUser, isLoggedIn: true })
@@ -43,7 +43,7 @@ export default function SignUpScreen({ navigation }) {
                 />
                 <Text large center style={({ marginTop: 20 })}>
                     Sign up to get started
-            </Text>
+                </Text>
             </View>
             <View style={styles.main}>
 

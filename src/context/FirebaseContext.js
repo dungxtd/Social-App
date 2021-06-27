@@ -22,10 +22,15 @@ const Firebase = {
         try {
             await firebase.auth().createUserWithEmailAndPassword(user.email, user.password);
             const uid = Firebase.getCurrentUser().uid
-            let profilePhotoUrl = "default";
+            let profilePhotoUrl = "default", followers = 0, following = 0, posts = 0;
             await db.collection("users").doc(uid).set({
                 username: user.username,
                 email: user.email,
+                name: "",
+                bio: "",
+                posts,
+                followers,
+                following,
                 profilePhotoUrl
             })
             if (user.profilePhoto) {
@@ -42,13 +47,13 @@ const Firebase = {
         const uid = Firebase.getCurrentUser().uid;
         try {
             const photo = await Firebase.getBlob(uri)
-            const imageRef = firebase.storage().ref("profilePhotos").child('IMG_' + Math.random(4000))
+            const imageRef = await firebase.storage().ref("profilePhotos").child('IMG_' + Math.random(4000))
             await imageRef.put(photo)
             const url = await imageRef.getDownloadURL();
             await db.collection("users").doc(uid).update({
                 profilePhotoUrl: url,
             });
-            console.log(url)
+            //console.log(url)
             return url;
         } catch (error) {
             console.log("Error @UploadProfilePhoto: ", error.message);
@@ -73,11 +78,9 @@ const Firebase = {
     getUserInfo: async (uid) => {
         try {
             const user = await db.collection("users").doc(uid).get()
-
             if (user.exists) {
                 return user.data()
             }
-
         } catch (error) {
             console.log("Error @GetUserInfo: ", error)
         }
@@ -101,14 +104,17 @@ const Firebase = {
 
 
     updateProfile: async (user) => {
-        const uid = Firebase.getCurrentUser().uid;
-        await db.collection("users").doc(uid).update({
-            username: user.username,
-            // profilePhotoUrl: user.profilePhotoUrl,
-        }).finally(
-            console.log(user)
-        )
-        // return { ...user, profilePhotoUrl, uid }
+        try {
+            await db.collection("users").doc(user.uid).update({
+                username: user.username,
+                email: user.email,
+                name: user.name,
+                bio: user.bio,
+                profilePhotoUrl: user.profilePhotoUrl
+            })
+        } catch (error) {
+            console.log("Error @updateProfile", error.message);
+        }
     }
 };
 
