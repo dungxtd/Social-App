@@ -1,11 +1,39 @@
 import React from 'react'
+import { useState, useRef, useContext, useEffect, useLayoutEffect } from 'react'
 import { StyleSheet, View, StatusBar, FlatList, Image } from 'react-native'
 import Text from '../components/Text'
 import { Entypo, Ionicons, Feather } from '@expo/vector-icons'
 import Data from '../components/Data'
 import PostScreen from './PostScreen'
+import firebase from 'firebase'
+import { FirebaseContext } from '../context/FirebaseContext'
+const db = firebase.firestore();
+export default function HomeScreen() {
+    const firebase = useContext(FirebaseContext);
+    const [posts, setPosts] = useState([]);
+    useEffect(() => {
+        getAllPosts();
+    }, [])
+    const getAllPosts = async () => {
+        const allPosts = [];
+        try {
+            await db.collection("posts").where("userId", "!=", "")
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        if ((doc.id, " => ", doc.data()) != null) allPosts.push({ ...doc.data(), postId: doc.id });
+                    });
+                })
+                .catch((error) => {
+                    console.log("@getAllPosts: ", error);
+                });
+        } catch (error) {
+            console.log("@getAllPosts: ", error)
+        }
+        await setPosts(allPosts);
+        console.log(posts);
 
-export default function HomeScreen({ navigation }) {
+    }
 
     const renderPost = ({ item }) =>
         <View style={styles.postContainer}>

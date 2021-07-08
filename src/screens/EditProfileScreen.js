@@ -33,30 +33,21 @@ export default function EditProfileScreen({ navigation }) {
                         <Text medium>Cancel</Text>
                     </TouchableOpacity>
                 </View>
-            ),
-            // headerRight: () => (
-            //     <TouchableOpacity
-            //         style={{ marginRight: 20 }}
-            //         onPress={() => updateProfile()}
-            //     >
-            //         <Text bold medium color={'#40a0ed'}>Done</Text>
-            //     </TouchableOpacity>
-            // ),
+            )
         });
     }, [navigation, updateProfile]);
-
     const updateProfile = async () => {
         setLoading(true);
         try {
-            var profilePhotoUrl = await firebase.uploadProfilePhoto(userUpdate.profilePhotoUrl);
-            await setUserUpdate({ ...userUpdate, profilePhotoUrl: profilePhotoUrl })
-            console.log(userUpdate);
+            var profilePhotoUrlUpdate = await firebase.uploadProfilePhoto(userUpdate.profilePhotoUrl);
+            setUser({ ...userUpdated, profilePhotoUrl: profilePhotoUrlUpdate });
+            console.log(user);
             await firebase.updateProfile(userUpdate);
-            setUser(userUpdate);
         } catch (error) {
             console.log("Error @updateProfile: ", error);
         } finally {
             setLoading(false);
+            navigation.navigate('Profile');
         }
     }
 
@@ -153,13 +144,14 @@ export default function EditProfileScreen({ navigation }) {
             <View style={styles.wrapLongLine}>
                 <View style={styles.longLine}></View>
             </View>
-            <TouchableOpacity style={styles.buttonDone} disabled={loading} onPress={updateProfile} >
-                {loading ? (
-                    <Loading />
-                ) : (
-                    <Text medium bold color="#40a0ed">Done</Text>
-                )}
-            </TouchableOpacity>
+            <View style={styles.wrapButtonDone}>
+                <TouchableOpacity style={styles.buttonDone} disabled={loading} onPress={updateProfile} >
+                    {loading ? (
+                        <Loading />
+                    ) : (
+                        <Text medium bold color="#40a0ed">Done</Text>
+                    )}
+                </TouchableOpacity></View>
         </View>
     )
 }
@@ -226,7 +218,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
     },
     buttonDone: {
-        width: '100%',
+        width: '25%',
         height: 36,
         alignItems: 'center',
         justifyContent: 'center',
@@ -234,6 +226,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 6,
         marginTop: 16,
+        backgroundColor: '#f9f9f9',
+    },
+    wrapButtonDone: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 })
 const Loading = styled.ActivityIndicator.attrs(props => ({

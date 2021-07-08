@@ -56,33 +56,6 @@ const FeedScreen = ({ navigation }) => (
         <FeedStack.Screen
             name="Post"
             component={PostScreen}
-            options={{
-                title: 'Create Post',
-                headerTitleAlign: 'center',
-                headerTitleStyle: {
-                    fontSize: 17,
-                },
-                headerStyle: {
-                    backgroundColor: 'white',
-                    elevation: 0,
-                },
-                headerBackTitleVisible: false,
-                headerBackImage: () => (
-                    <View style={{ marginLeft: 10 }}>
-                        <AntDesign.Button
-                            name="left"
-                            size={20}
-                            color="#111"
-                            backgroundColor="white"
-                        />
-                    </View>
-                ),
-                headerRight: () => (
-                    <TouchableOpacity style={{ marginRight: 20 }}>
-                        <Text bold medium color={'#40a0ed'}>Post</Text>
-                    </TouchableOpacity>
-                ),
-            }}
         />
     </FeedStack.Navigator>
 );

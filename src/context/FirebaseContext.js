@@ -4,7 +4,6 @@ import firebase from 'firebase'
 import "firebase/auth"
 import "firebase/firestore"
 import config from '../config/firebase'
-
 const FirebaseContext = createContext()
 
 if (!firebase.apps.length) {
@@ -43,6 +42,22 @@ const Firebase = {
         }
 
     },
+    createPost: async (post) => {
+        try {
+            const uid = Firebase.getCurrentUser().uid
+            await db.collection("posts").add({
+                likes: null,
+                comments: null,
+                content: post.content,
+                time: firebase.firestore.Timestamp.fromDate(new Date()),
+                userId: uid,
+                postPhotoUrl: post.postPhotoUrl !== null ? await Firebase.uploadPostPhoto(post.postPhotoUrl) : null
+            })
+        } catch (error) {
+            console.log("Error @createPost", error.message);
+        }
+
+    },
     uploadProfilePhoto: async (uri) => {
         const uid = Firebase.getCurrentUser().uid;
         try {
@@ -57,6 +72,19 @@ const Firebase = {
             return url;
         } catch (error) {
             console.log("Error @UploadProfilePhoto: ", error.message);
+        }
+    },
+
+    uploadPostPhoto: async (uri) => {
+        const uid = Firebase.getCurrentUser().uid;
+        try {
+            const photo = await Firebase.getBlob(uri)
+            const imageRef = await firebase.storage().ref("postPhotos").child('IMG_' + Math.random(4000))
+            await imageRef.put(photo)
+            const url = await imageRef.getDownloadURL();
+            return url;
+        } catch (error) {
+            console.log("Error @UploadPostPhoto: ", error.message);
         }
     },
 
@@ -110,11 +138,29 @@ const Firebase = {
                 email: user.email,
                 name: user.name,
                 bio: user.bio,
-                profilePhotoUrl: user.profilePhotoUrl
+                //profilePhotoUrl: user.profilePhotoUrl
             })
         } catch (error) {
             console.log("Error @updateProfile", error.message);
         }
+    },
+
+    getAllPosts: async () => {
+        const allPosts = [];
+        await db.collection("posts").where("userId", "!=", "")
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    // doc.data() is never undefined for query doc snapshots
+                    //console.log(doc.id, " => ", doc.data());
+                    if ((doc.id, " => ", doc.data()) != null) allPosts.push({ ...doc.data(), postId: doc.id });
+                });
+                // console.log(allPosts);
+                return allPosts;
+            })
+            .catch((error) => {
+                console.log("@getAllPosts: ", error);
+            });
     }
 };
 
