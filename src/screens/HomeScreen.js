@@ -12,43 +12,44 @@ export default function HomeScreen() {
     const firebase = useContext(FirebaseContext);
     const [posts, setPosts] = useState([]);
     useEffect(() => {
+        async function getAllPosts() {
+            const allPosts = [];
+            try {
+                await db.collection("posts").where("userId", "!=", "")
+                    .get()
+                    .then((querySnapshot) => {
+                        querySnapshot.forEach((doc) => {
+                            if ((doc.id, " => ", doc.data()) != null) allPosts.push({ ...doc.data(), postId: doc.id });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log("@getAllPosts: ", error);
+                    });
+            } catch (error) {
+                console.log("@getAllPosts: ", error)
+            }
+            await setPosts(allPosts);
+            console.log(posts);
+
+        }
         getAllPosts();
     }, [])
-    const getAllPosts = async () => {
-        const allPosts = [];
-        try {
-            await db.collection("posts").where("userId", "!=", "")
-                .get()
-                .then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        if ((doc.id, " => ", doc.data()) != null) allPosts.push({ ...doc.data(), postId: doc.id });
-                    });
-                })
-                .catch((error) => {
-                    console.log("@getAllPosts: ", error);
-                });
-        } catch (error) {
-            console.log("@getAllPosts: ", error)
-        }
-        await setPosts(allPosts);
-        console.log(posts);
 
-    }
 
     const renderPost = ({ item }) =>
         <View style={styles.postContainer}>
             <View style={styles.postHeaderContainer}>
-                <Image style={styles.postProfilePhoto} source={{ uri: item.user.profilePhotoUrl }} />
+                {/* <Image style={styles.postProfilePhoto} source={{ uri: item.user.profilePhotoUrl }} /> */}
                 <View style={styles.postInfoContainer}>
-                    <Text bold>{item.user.username}</Text>
-                    <Text small>{item.postedAt}</Text>
+                    {/* <Text bold>{item.user.username}</Text>
+                    <Text small>{item.postedAt}</Text> */}
                 </View>
             </View>
             <View style={styles.post}>
-                <Image style={styles.postImage} source={{ uri: item.photoUrL }} />
+                <Image style={styles.postImage} source={{ uri: item.postPhotoUrl }} />
                 <View style={styles.postTitle}>
                     {/* <Text bold>{item.user.username}</Text> */}
-                    <Text>{item.post}</Text>
+                    <Text>{item.content}</Text>
                 </View>
             </View>
             <View style={styles.optionsPost}>
@@ -71,9 +72,9 @@ export default function HomeScreen() {
 
             <View style={styles.feedContainer}>
                 <FlatList
-                    data={Data}
+                    data={posts}
                     renderItem={renderPost}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.postId}
                 />
             </View>
             <StatusBar barStyle="dark-content" />

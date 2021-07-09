@@ -143,24 +143,6 @@ const Firebase = {
         } catch (error) {
             console.log("Error @updateProfile", error.message);
         }
-    },
-
-    getAllPosts: async () => {
-        const allPosts = [];
-        await db.collection("posts").where("userId", "!=", "")
-            .get()
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    // doc.data() is never undefined for query doc snapshots
-                    //console.log(doc.id, " => ", doc.data());
-                    if ((doc.id, " => ", doc.data()) != null) allPosts.push({ ...doc.data(), postId: doc.id });
-                });
-                // console.log(allPosts);
-                return allPosts;
-            })
-            .catch((error) => {
-                console.log("@getAllPosts: ", error);
-            });
     }
 };
 
