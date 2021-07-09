@@ -11,31 +11,34 @@ const db = firebase.firestore();
 export default function HomeScreen() {
     const firebase = useContext(FirebaseContext);
     const [posts, setPosts] = useState([]);
+    const [refresh, setRefresh] = useState(false);
     useEffect(() => {
-        async function getAllPosts() {
-            const allPosts = [];
-            try {
-                await db.collection("posts").where("userId", "!=", "")
-                    .get()
-                    .then((querySnapshot) => {
-                        querySnapshot.forEach((doc) => {
-                            if ((doc.id, " => ", doc.data()) != null) allPosts.push({ ...doc.data(), postId: doc.id });
-                        });
-                    })
-                    .catch((error) => {
-                        console.log("@getAllPosts: ", error);
-                    });
-            } catch (error) {
-                console.log("@getAllPosts: ", error)
-            }
-            await setPosts(allPosts);
-            console.log(posts);
-
-        }
-        getAllPosts();
+        setRefresh(true);
+        console.log("useEffect");
+        handeRefresh();
     }, [])
 
+    handeRefresh = async () => {
+        const allPosts = [];
+        try {
+            await db.collection("posts").where("userId", "!=", "")
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        if ((doc.id, " => ", doc.data()) != null) allPosts.push({ ...doc.data(), postId: doc.id });
+                    });
+                    setPosts(allPosts);
+                    console.log(1);
+                })
+                .catch((error) => {
+                    console.log("@getAllPosts: ", error);
+                });
+            setRefresh(false);
+        } catch (error) {
+            console.log("@getAllPosts: ", error)
+        }
 
+    }
     const renderPost = ({ item }) =>
         <View style={styles.postContainer}>
             <View style={styles.postHeaderContainer}>
@@ -75,6 +78,8 @@ export default function HomeScreen() {
                     data={posts}
                     renderItem={renderPost}
                     keyExtractor={item => item.postId}
+                    refreshing={refresh}
+                    onRefresh={handeRefresh}
                 />
             </View>
             <StatusBar barStyle="dark-content" />
