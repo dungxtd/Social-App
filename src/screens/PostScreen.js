@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { StyleSheet, View, TextInput, Keyboard, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, ScrollView, View, TextInput, Keyboard, TouchableOpacity, Image, TouchableWithoutFeedback, Dimensions, PixelRatio } from 'react-native'
 import InputScrollView from 'react-native-input-scroll-view';
 import Text from '../components/Text'
 import styled from 'styled-components/native'
@@ -69,9 +69,9 @@ export default function PostScreen({ navigation }) {
     }
 
     return (
-        <View style={styles.container}>
-            <InputScrollView>
-                <View style={styles.profileInfoContainer}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
+            <View style={styles.container}>
+                <View style={styles.profileInfoContainer} >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <View style={styles.profilePhotoContainer}>
                             <Image style={styles.profilePhoto} source={user.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
@@ -81,32 +81,33 @@ export default function PostScreen({ navigation }) {
                         </View>
                         <Text medium bold center style={styles.profileUsernameTitle}>{user.username}</Text>
                     </View>
-                    <TouchableOpacity style={{ marginRight: 10 }} onPress={pickImage}>
+                    <TouchableOpacity onPress={pickImage} >
                         <Text small bold color="#40a0ed">Add Photo</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={{ marginRight: 10 }} disabled={loading || (postPhotoUrl == null && content.length == 0)} onPress={createPost} >
+                        {loading ? (
+                            <Loading />
+                        ) : (
+                            <Text medium bold color={loading || (postPhotoUrl == null && content.length == 0) ? "#dedede" : "#40a0ed"} >Post</Text>
+                        )}
+                    </TouchableOpacity>
+
                 </View>
-                <View style={styles.profilePhotoContainer}>
-                </View>
-                {postPhotoUrl !== null ? <Image style={styles.postPhoto} source={{ uri: postPhotoUrl }} /> : null}
-                <TextInput
-                    autoFocus={true}
-                    placeholder="What's on your mind?"
-                    style={styles.input}
-                    onChangeText={text => setContent(text)}
-                    value={content}
-                    ho
-                    multiline />
-            </InputScrollView>
-            <View style={styles.wrapButtonPost}>
-                <TouchableOpacity style={styles.buttonPost} disabled={loading} onPress={createPost} >
-                    {loading ? (
-                        <Loading />
-                    ) : (
-                        <Text medium bold color="#40a0ed">Post</Text>
-                    )}
-                </TouchableOpacity>
+                <ScrollView>
+                    <TextInput
+                        autoFocus={true}
+                        // onFocus={Keyboard.dismiss()}
+                        placeholder="What's on your mind?"
+                        style={styles.input}
+                        onChangeText={text => { setContent(text) }}
+                        value={content}
+                        multiline
+                    // editable={false} selectTextOnFocus={false}
+                    />
+                    {postPhotoUrl !== null ? <Image style={{ width: Dimensions.get('window').width - 20, height: Dimensions.get('window').width - 20, marginTop: 20 }} source={{ uri: postPhotoUrl }} /> : null}
+                </ScrollView>
             </View>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 
@@ -114,22 +115,22 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+        padding: 10,
     },
     input: {
-        height: '100%',
-        marginLeft: 12,
-        marginRight: 12,
-        paddingBottom: '30%',
+        flex: 1,
+        height: '50%',
+        // marginLeft: 12,
+        // marginRight: 12,
+        paddingBottom: 20,
         fontSize: 18,
     },
     profileInfoContainer: {
         display: 'flex',
-        flex: 1,
+        // flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingLeft: 10,
         paddingBottom: 10,
-        paddingTop: 5,
         justifyContent: 'space-between'
     },
     profilePhotoContainer: {
@@ -145,12 +146,6 @@ const styles = StyleSheet.create({
     profileUsernameTitle: {
         paddingLeft: 10,
     },
-    postPhoto: {
-        width: 100,
-        height: 100,
-        marginLeft: 10,
-        marginBottom: 10,
-    },
     buttonPost: {
         width: '25%',
         height: 36,
@@ -163,7 +158,8 @@ const styles = StyleSheet.create({
         marginBottom: 60,
     },
     wrapButtonPost: {
-        flex: 2,
+        // flex: 2,
+        height: 20,
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',

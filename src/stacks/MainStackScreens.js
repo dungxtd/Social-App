@@ -14,6 +14,7 @@ import NotificationScreen from '../screens/NotificationScreen'
 import ProfileScreen from '../screens/ProfileScreen'
 import EditProfileScreen from '../screens/EditProfileScreen'
 import PostScreen from '../screens/PostScreen'
+import CommentScreen from '../screens/CommentScreen'
 const MainStack = createBottomTabNavigator();
 const FeedStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
@@ -56,6 +57,11 @@ const FeedScreen = ({ navigation }) => (
         <FeedStack.Screen
             name="Post"
             component={PostScreen}
+        />
+        <FeedStack.Screen
+            name="Comment"
+            component={CommentScreen}
+            options={({ navigation, route }) => ({})}
         />
     </FeedStack.Navigator>
 );

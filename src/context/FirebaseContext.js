@@ -46,8 +46,8 @@ const Firebase = {
         try {
             const uid = Firebase.getCurrentUser().uid
             await db.collection("posts").add({
-                likes: null,
-                comments: null,
+                likes: [],
+                comments: [],
                 content: post.content,
                 time: firebase.firestore.Timestamp.fromDate(new Date()),
                 userId: uid,
