@@ -196,8 +196,9 @@ export default function CommentScreen({ route, navigation }) {
                         <View style={{ height: 40 }}></View>
                     }
                 />
+                <KeyboardAccessoryView onClick={(text) => commentAction(text, item)} />
             </View>
-            <KeyboardAccessoryView onClick={(text) => commentAction(text, item)} />
+
         </View>
 
 

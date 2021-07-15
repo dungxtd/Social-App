@@ -41,9 +41,16 @@ class ViewExample extends Component {
                             }
                             }
                         />
-                        <TouchableOpacity onPress={() => { this.handleClick(); this.setState({ text: '' }) }}>
-                            <Feather style={styles.optionPostSend} name="send" size={21} color="#111" style={styles.iconComment} />
-                        </TouchableOpacity>
+                        {(
+                            <TouchableOpacity onPress={() => {
+                                if (this.state.text.length > 0) {
+                                    this.handleClick();
+                                    this.setState({ text: '' });
+                                }
+                            }}>
+                                <Feather style={styles.optionPostSend} name="send" size={21} color={this.state.text.length > 0 ? "#111" : "#ccc"} style={styles.iconComment} />
+                            </TouchableOpacity>
+                        )}
                     </View>
                 )}
             </KeyboardAccessoryView>
