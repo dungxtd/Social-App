@@ -16,7 +16,14 @@ class ViewExample extends Component {
     }
     render() {
         return (
-            <KeyboardAccessoryView alwaysVisible={true} inSafeAreaView={false} bumperHeight={15} style={{ backgroundColor: "#fff" }}>
+
+            <KeyboardAccessoryView
+                alwaysVisible={true}
+                inSafeAreaView={false}
+                bumperHeight={15}
+                avoidKeyboard={true}
+                inSafeAreaView={true}
+                style={{ backgroundColor: "#fff" }}>
                 {({ isKeyboardVisible }) => (
                     <View style={styles.textInputView}>
                         {/* <Text>Comment :</Text> */}
@@ -25,19 +32,18 @@ class ViewExample extends Component {
                             underlineColorAndroid="transparent"
                             style={styles.textInput}
                             multiline={false}
-                            // autoFocus={true}
+                            autoFocus={true}
+                            value={this.state.text}
                             onChangeText={(text) => {
                                 this.setState({
-                                    text: (text.trim())
+                                    text: text
                                 });
                             }
                             }
                         />
-                        {isKeyboardVisible && (
-                            <TouchableOpacity onPress={() => this.handleClick()} >
-                                <Feather style={styles.optionPostSend} name="send" size={21} color="#111" style={styles.iconComment} />
-                            </TouchableOpacity>
-                        )}
+                        <TouchableOpacity onPress={() => { this.handleClick(); this.setState({ text: '' }) }}>
+                            <Feather style={styles.optionPostSend} name="send" size={21} color="#111" style={styles.iconComment} />
+                        </TouchableOpacity>
                     </View>
                 )}
             </KeyboardAccessoryView>

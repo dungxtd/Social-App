@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import KeyboardAccessoryView from 'react-native-keyboard-accessory'
+import { KeyboardAccessoryView } from 'react-native-keyboard-accessory'
 
 export const Container = styled.View`
   flex: 1;

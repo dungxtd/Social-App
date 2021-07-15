@@ -104,8 +104,8 @@ export default function CommentScreen({ route, navigation }) {
     const renderItem = ({ item }) => {
         return (
             <View>
-                <View style={{ display: 'flex', flexDirection: 'row', paddingTop: 10, paddingLeft: 20 }}>
-                    <Image style={styles.commentProfilePhoto} source={{ uri: user.profilePhotoUrl }} />
+                <View style={{ display: 'flex', flexDirection: 'row', paddingTop: 10, paddingLeft: 15 }}>
+                    <Image style={styles.commentProfilePhoto} source={{ uri: item.user.profilePhotoUrl }} />
                     <View style={styles.postInfoContainer}>
                         <Text bold> {item.user.username} </Text>
                         <Text small> {Moment(item.time.toDate()).format('HH:mm').toString()} </Text>
@@ -162,7 +162,7 @@ export default function CommentScreen({ route, navigation }) {
                                 </View>
                             </View>
                             <View style={styles.post}>
-                                {/* <Image style={styles.postImage} source={{ uri: item.postPhotoUrl }} /> */}
+                                <Image style={styles.postImage} source={{ uri: item.postPhotoUrl }} />
                                 <View style={styles.postTitle}>
                                     <Text bold>  {item.user.username} </Text>
                                     {item.content !== null && item.content.length > 0 ? <Text> {item.content} </Text> : null}
@@ -193,11 +193,8 @@ export default function CommentScreen({ route, navigation }) {
                     renderItem={renderItem}
                     keyExtractor={item => item.commentId}
                     ListFooterComponent={
-                        <Text></Text>
+                        <View style={{ height: 40 }}></View>
                     }
-                // refreshing={refresh}
-                // onRefresh={handeRefresh}
-                // extraData={selectedPost}
                 />
             </View>
             <KeyboardAccessoryView onClick={(text) => commentAction(text, item)} />
