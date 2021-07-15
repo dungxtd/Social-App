@@ -29,8 +29,6 @@ export const UserImg = styled.Image`
 
 export const UserInfoText = styled.View`
   flex-direction: column;
-  justify-content: center;
-  margin-left: 10px;
 `;
 
 export const UserName = styled.Text`
@@ -59,18 +57,12 @@ export const PostImg = styled.Image`
   /* margin-top: 15px; */
 `;
 
-export const Divider = styled.View`
-  border-bottom-color: #dddddd;
-  border-bottom-width: 1px;
-  width: 92%;
-  align-self: center;
-  margin-top: 15px;
+export const Divider = styled.ScrollView`
+flex: 1;
 `;
 
-export const InteractionWrapper = styled.View`
-  flex-direction: row;
-  justify-content: space-around;
-  padding: 15px;
+export const InteractionWrapper = styled.SafeAreaView`
+flex: 1;
 `;
 
 export const Interaction = styled.TouchableOpacity`

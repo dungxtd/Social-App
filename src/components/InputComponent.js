@@ -25,7 +25,7 @@ class ViewExample extends Component {
                             underlineColorAndroid="transparent"
                             style={styles.textInput}
                             multiline={false}
-                            autoFocus={true}
+                            // autoFocus={true}
                             onChangeText={(text) => {
                                 this.setState({
                                     text: (text.trim())

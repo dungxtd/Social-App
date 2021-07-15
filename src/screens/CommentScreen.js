@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { FirebaseContext } from '../context/FirebaseContext'
 import { UserContext } from '../context/UserContext'
 import Text from '../components/Text'
-import { useState, useRef, useContext, useEffect, useLayoutEffect, TouchableOpacity, TextInput } from 'react'
+import { useState, useRef, useContext, useEffect, useLayoutEffect, TouchableOpacity, TextInput, ScrollView, SafeAreaView } from 'react'
 import { StyleSheet, View, StatusBar, FlatList, Image, Platform } from 'react-native'
 import { Entypo, Ionicons, Feather } from '@expo/vector-icons'
 import Moment from 'moment';
@@ -35,6 +35,7 @@ export default function CommentScreen({ route, navigation }) {
     const [item, setItem] = useState({ ...route.params.post });
     const [comment, setComment] = useState([]);
     const uid = useState({ ...user.uid });
+    const [refresh, setRefresh] = useState(false);
     React.useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Comment',
@@ -57,15 +58,16 @@ export default function CommentScreen({ route, navigation }) {
         });
     }, [navigation, handleGetPost]);
     const commentAction = async (comment, post) => {
-        console.log(post);
+        // console.log(post);
         await db.collection("posts")
             .doc(post.postId)
             .collection("comments")
             .add({
                 comment: comment,
                 time: firebase.firestore.Timestamp.fromDate(new Date()),
-                userId: uid
+                userId: user.uid,
             });
+        await setRefresh(true);
     }
     const onLikePress = async (post) => {
         if (!post.currentUserLiked) {
@@ -97,14 +99,15 @@ export default function CommentScreen({ route, navigation }) {
         // setRefresh(true);
         console.log("useEffect comment");
         handleGetPost();
-    }, [])
+
+    }, [refresh])
     const renderItem = ({ item }) => {
         return (
             <View>
                 <View style={{ display: 'flex', flexDirection: 'row', paddingTop: 10, paddingLeft: 20 }}>
                     <Image style={styles.commentProfilePhoto} source={{ uri: user.profilePhotoUrl }} />
                     <View style={styles.postInfoContainer}>
-                        <Text bold> {user.username} </Text>
+                        <Text bold> {item.user.username} </Text>
                         <Text small> {Moment(item.time.toDate()).format('HH:mm').toString()} </Text>
                     </View>
                     <Text>{item.comment}</Text>
@@ -136,8 +139,10 @@ export default function CommentScreen({ route, navigation }) {
                 .catch((error) => {
                     console.log("@handleGetPost: ", error);
                 });
+            arrCommentWithUser.sort((a, b) => a.time.toDate() > b.time.toDate() ? 1 : -1)
             await setComment(arrCommentWithUser);
-            console.log(comment);
+            await setRefresh(false);
+            // console.log(comment);
         } catch (error) {
             console.log("@handeGetPost: ", error)
         }
@@ -145,55 +150,60 @@ export default function CommentScreen({ route, navigation }) {
     }
     return (
         <View style={styles.postContainer}>
-            <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-                <View style={styles.postHeaderContainer}>
-                    <Image style={styles.postProfilePhoto} source={{ uri: user.profilePhotoUrl }} />
-                    <View style={styles.postInfoContainer}>
-                        <Text bold medium> {user.username} </Text>
-                        <Text small> {Moment(item.time.toDate()).format('HH:mm DD/MM/YYYY').toString()} </Text>
-                    </View>
-                </View>
-                <View style={styles.post}>
-                    {/* <Image style={styles.postImage} source={{ uri: item.postPhotoUrl }} /> */}
-                    <View style={styles.postTitle}>
-                        <Text bold>  {item.user.username} </Text>
-                        {item.content !== null && item.content.length > 0 ? <Text> {item.content} </Text> : null}
-                    </View>
-                </View>
-                <View style={styles.optionsPost}>
-                    <Interaction onPress={() => onLikePress(item)}>
-                        <Ionicons style={styles.optionPost} name={item.currentUserLiked ? "ios-heart" : "ios-heart-outline"} size={25} color={item.currentUserLiked ? "red" : "#111"} />
-                    </Interaction>
-                    <Interaction >
-                        <Ionicons style={styles.optionPost} name="ios-chatbubble-outline" size={23} color="#111" />
-                    </Interaction>
-                    <Interaction >
-                        <Feather style={styles.optionPostSend} name="send" size={21} color="#111" />
-                    </Interaction>
-                </View>
-                <View style={styles.detailPost}>
-                    {item.likes.length > 0 ? (
-                        <Text bold style={styles.postLiked}>{item.likes.length} {item.likes.length > 1 ? "likes" : "like"}</Text>
-                    ) : null}
-                    {item.comments.length > 0 ? <Text small style={styles.postCommented}>View all {item.comments.length} {item.comments.length > 1 ? "comments" : "comment"}</Text> : null}
-                </View>
-                <View style={styles.wrapPostLine}>
-                    <View style={styles.postLine}></View>
-                </View>
-                <View style={styles.commentContainer}>
-                    <FlatList
-
-                        data={comment}
-                        renderItem={renderItem}
-                        keyExtractor={item => item.commentId}
-                    // refreshing={refresh}
-                    // onRefresh={handeRefresh}
-                    // extraData={selectedPost}
-                    />
-                </View>
+            <View style={styles.commentContainer}>
+                <FlatList
+                    ListHeaderComponent={
+                        <>
+                            <View style={styles.postHeaderContainer}>
+                                <Image style={styles.postProfilePhoto} source={{ uri: item.user.profilePhotoUrl }} />
+                                <View style={styles.postInfoContainer}>
+                                    <Text bold medium> {item.user.username} </Text>
+                                    <Text small> {Moment(item.time.toDate()).format('HH:mm DD/MM/YYYY').toString()} </Text>
+                                </View>
+                            </View>
+                            <View style={styles.post}>
+                                {/* <Image style={styles.postImage} source={{ uri: item.postPhotoUrl }} /> */}
+                                <View style={styles.postTitle}>
+                                    <Text bold>  {item.user.username} </Text>
+                                    {item.content !== null && item.content.length > 0 ? <Text> {item.content} </Text> : null}
+                                </View>
+                            </View>
+                            <View style={styles.optionsPost}>
+                                <Interaction onPress={() => onLikePress(item)}>
+                                    <Ionicons style={styles.optionPost} name={item.currentUserLiked ? "ios-heart" : "ios-heart-outline"} size={25} color={item.currentUserLiked ? "red" : "#111"} />
+                                </Interaction>
+                                <Interaction >
+                                    <Ionicons style={styles.optionPost} name="ios-chatbubble-outline" size={23} color="#111" />
+                                </Interaction>
+                                <Interaction >
+                                    <Feather style={styles.optionPostSend} name="send" size={21} color="#111" />
+                                </Interaction>
+                            </View>
+                            <View style={styles.detailPost}>
+                                {item.likes.length > 0 ? (
+                                    <Text bold style={styles.postLiked}>{item.likes.length} {item.likes.length > 1 ? "likes" : "like"}</Text>
+                                ) : null}
+                                {item.comments.length > 0 ? <Text small style={styles.postCommented}>View all {item.comments.length} {item.comments.length > 1 ? "comments" : "comment"}</Text> : null}
+                            </View>
+                            <View style={styles.wrapPostLine}>
+                                <View style={styles.postLine}></View>
+                            </View>
+                        </>}
+                    data={comment}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.commentId}
+                    ListFooterComponent={
+                        <Text></Text>
+                    }
+                // refreshing={refresh}
+                // onRefresh={handeRefresh}
+                // extraData={selectedPost}
+                />
             </View>
             <KeyboardAccessoryView onClick={(text) => commentAction(text, item)} />
         </View>
+
+
     )
 }
 
@@ -305,7 +315,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
     },
     commentContainer: {
-        // flex: 1
+        flex: 1
     },
 
 })

@@ -16,26 +16,26 @@ export default function ProfileScreen({ navigation }) {
         }
     }
 
-    useEffect(() => {
-        setTimeout(async () => {
-            const user = firebase.getCurrentUser();
-            if (user) {
-                const userInfo = await firebase.getUserInfo(user.uid);
-                setUser({
-                    isLoggedIn: true,
-                    email: userInfo.email,
-                    uid: user.uid,
-                    bio: userInfo.bio,
-                    name: userInfo.name,
-                    posts: userInfo.posts,
-                    followers: userInfo.followers,
-                    following: userInfo.following,
-                    username: userInfo.username,
-                    profilePhotoUrl: userInfo.profilePhotoUrl
-                })
-            }
-        }, 500)
-    }, [])
+    // useEffect(() => {
+    //     setTimeout(async () => {
+    //         const user = firebase.getCurrentUser();
+    //         if (user) {
+    //             const userInfo = await firebase.getUserInfo(user.uid);
+    //             setUser({
+    //                 isLoggedIn: true,
+    //                 email: userInfo.email,
+    //                 uid: user.uid,
+    //                 bio: userInfo.bio,
+    //                 name: userInfo.name,
+    //                 posts: userInfo.posts,
+    //                 followers: userInfo.followers,
+    //                 following: userInfo.following,
+    //                 username: userInfo.username,
+    //                 profilePhotoUrl: userInfo.profilePhotoUrl
+    //             })
+    //         }
+    //     }, 500)
+    // }, [])
 
     return (
         <View style={styles.container}>
