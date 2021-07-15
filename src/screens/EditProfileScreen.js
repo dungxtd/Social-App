@@ -40,7 +40,7 @@ export default function EditProfileScreen({ navigation }) {
         setLoading(true);
         try {
             var profilePhotoUrlUpdate = await firebase.uploadProfilePhoto(userUpdate.profilePhotoUrl);
-            setUser({ ...userUpdated, profilePhotoUrl: profilePhotoUrlUpdate });
+            setUser({ ...userUpdate, profilePhotoUrl: profilePhotoUrlUpdate });
             console.log(user);
             await firebase.updateProfile(userUpdate);
         } catch (error) {

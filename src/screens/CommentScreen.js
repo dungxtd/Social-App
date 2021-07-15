@@ -34,7 +34,7 @@ export default function CommentScreen({ route, navigation }) {
     const postAiDi = useState(route.params.post.postId);
     const [item, setItem] = useState({ ...route.params.post });
     const [comment, setComment] = useState([]);
-    const uid = useContext(FirebaseContext).getCurrentUser().uid;
+    const uid = useState({ ...user.uid });
     React.useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Comment',

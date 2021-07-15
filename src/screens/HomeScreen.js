@@ -15,7 +15,7 @@ import "firebase/firestore"
 export default function HomeScreen({ navigation }) {
     // const firebase = useContext(FirebaseContext);
     const [user, setUser] = useContext(UserContext);
-    const uid = useContext(FirebaseContext).getCurrentUser().uid;
+    const uid = useState({ ...user.uid });
     const [posts, setPosts] = useState([]);
     const [refresh, setRefresh] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);

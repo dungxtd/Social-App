@@ -15,7 +15,7 @@ const db = firebase.firestore();
 const Firebase = {
 
     getCurrentUser: () => {
-        return firebase.auth().currentUser
+        return firebase.auth().currentUser;
     },
     createUser: async (user) => {
         try {
@@ -44,7 +44,7 @@ const Firebase = {
     },
     createPost: async (post) => {
         try {
-            const uid = Firebase.getCurrentUser().uid
+            const uid = Firebase.getCurrentUser().uid;
             await db.collection("posts").add({
                 likes: [],
                 comments: [],
