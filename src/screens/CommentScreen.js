@@ -176,10 +176,10 @@ export default function CommentScreen({ route, navigation }) {
                                 </View>
                             </View>
                             <View style={styles.post}>
-                                <Image style={styles.postImage} source={{ uri: item.postPhotoUrl }} />
+                                {item.postPhotoUrl ? <Image style={styles.postImage} source={{ uri: item.postPhotoUrl }} /> : null}
                                 <View style={styles.postTitle}>
-                                    <Text bold>  {item.user.username} </Text>
-                                    {item.content !== null && item.content.length > 0 ? <Text> {item.content} </Text> : null}
+                                    <Text bold>{item.user.username}</Text>
+                                    {item.content !== null && item.content.length > 0 ? <Text>{item.content}</Text> : null}
                                 </View>
                             </View>
                             <View style={styles.optionsPost}>
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     postTitle: {
-        marginLeft: 6,
+        marginLeft: 12,
     },
     optionsPost: {
         marginTop: 10,
