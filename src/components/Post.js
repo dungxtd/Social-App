@@ -23,7 +23,10 @@ export default function Post({ item, onLikePress, onCommentPress }) {
     return (
         <View style={styles.postContainer}>
             <View style={styles.postHeaderContainer}>
-                <Image style={styles.postProfilePhoto} source={{ uri: item.user.profilePhotoUrl }} />
+                <Image style={styles.postProfilePhoto} source={item.user.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
+                    : {
+                        uri: item.user.profilePhotoUrl
+                    }} />
                 <View style={styles.postInfoContainer}>
                     <Text bold medium> {item.user.username} </Text>
                     <Text small> {Moment(item.time.toDate()).format('HH:mm DD/MM/YYYY').toString()} </Text>
@@ -51,7 +54,10 @@ export default function Post({ item, onLikePress, onCommentPress }) {
                 {item.likes.length > 0 ? (
                     <Text bold style={styles.postLiked}>{item.likes.length} {item.likes.length > 1 ? "likes" : "like"}</Text>
                 ) : null}
-                {item.comments.length > 0 ? <Text small style={styles.postCommented}>View all {item.comments.length} {item.comments.length > 1 ? "comments" : "comment"}</Text> : null}
+                {item.comments > 0 ?
+                    <Interaction onPress={() => onCommentPress(item)}>
+                        <Text small style={styles.postCommented}>View all {item.comments} {item.comments > 1 ? "comments" : "comment"}</Text>
+                    </Interaction> : null}
             </View>
             <View style={styles.wrapPostLine}>
                 <View style={styles.postLine}></View>

@@ -57,7 +57,7 @@ export default function PostScreen({ navigation }) {
                 mediaType: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [1, 1],
-                quality: 1,
+                quality: 0.75,
             })
             if (!result.cancelled) {
                 await setPostPhotoUrl(result.uri);

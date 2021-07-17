@@ -67,7 +67,6 @@ flex: 1;
 
 export const Interaction = styled.TouchableOpacity`
   flex-direction: row;
-  justify-content: center;
   border-radius: 5px;
   background-color: ${(props) => (props.active ? '#2e64e515' : 'transparent')};
 `;

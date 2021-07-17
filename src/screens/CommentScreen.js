@@ -34,7 +34,6 @@ export default function CommentScreen({ route, navigation }) {
     const postAiDi = useState(route.params.post.postId);
     const [item, setItem] = useState({ ...route.params.post });
     const [comment, setComment] = useState([]);
-    const uid = useState({ ...user.uid });
     const [refresh, setRefresh] = useState(false);
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -66,13 +65,22 @@ export default function CommentScreen({ route, navigation }) {
                 comment: comment,
                 time: firebase.firestore.Timestamp.fromDate(new Date()),
                 userId: user.uid,
+            })
+        await db.collection("posts")
+            .doc(post.postId)
+            .collection("comments")
+            .get().then(snap => {
+                db.collection("posts").doc(post.postId).update({
+                    comments: snap.size // will return the collection size
+                })
             });
-        await setRefresh(true);
+        await setRefresh(!refresh);
     }
     const onLikePress = async (post) => {
+        console.log(user.uid)
         if (!post.currentUserLiked) {
             var postLikes = post.likes;
-            postLikes.push({ 'userId': uid.toString(), 'time': firebase.firestore.Timestamp.fromDate(new Date()) });
+            postLikes.push({ 'userId': user.uid, 'time': firebase.firestore.Timestamp.fromDate(new Date()) });
             await db.collection("posts")
                 .doc(post.postId)
                 .update({
@@ -82,7 +90,7 @@ export default function CommentScreen({ route, navigation }) {
             post.currentUserLiked = true;
         } else {
             var postLikes = post.likes;
-            var index = postLikes.map(e => e.userId).indexOf(uid.toString())
+            var index = postLikes.map(e => e.userId).indexOf(user.uid.toString());
             if (index !== -1)
                 postLikes.splice(index, 1);
             await db.collection("posts")
@@ -105,7 +113,10 @@ export default function CommentScreen({ route, navigation }) {
         return (
             <View>
                 <View style={{ display: 'flex', flexDirection: 'row', paddingTop: 10, paddingLeft: 15 }}>
-                    <Image style={styles.commentProfilePhoto} source={{ uri: item.user.profilePhotoUrl }} />
+                    <Image style={styles.commentProfilePhoto} source={item.user.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
+                        : {
+                            uri: item.user.profilePhotoUrl
+                        }} />
                     <View style={styles.postInfoContainer}>
                         <Text bold> {item.user.username} </Text>
                         <Text small> {Moment(item.time.toDate()).format('HH:mm').toString()} </Text>
@@ -141,7 +152,7 @@ export default function CommentScreen({ route, navigation }) {
                 });
             arrCommentWithUser.sort((a, b) => a.time.toDate() > b.time.toDate() ? 1 : -1)
             await setComment(arrCommentWithUser);
-            await setRefresh(false);
+            // await setRefresh(false);
             // console.log(comment);
         } catch (error) {
             console.log("@handeGetPost: ", error)
@@ -155,7 +166,10 @@ export default function CommentScreen({ route, navigation }) {
                     ListHeaderComponent={
                         <>
                             <View style={styles.postHeaderContainer}>
-                                <Image style={styles.postProfilePhoto} source={{ uri: item.user.profilePhotoUrl }} />
+                                <Image style={styles.postProfilePhoto} source={item.user.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
+                                    : {
+                                        uri: item.user.profilePhotoUrl
+                                    }} />
                                 <View style={styles.postInfoContainer}>
                                     <Text bold medium> {item.user.username} </Text>
                                     <Text small> {Moment(item.time.toDate()).format('HH:mm DD/MM/YYYY').toString()} </Text>

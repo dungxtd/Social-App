@@ -1,5 +1,9 @@
 import React from 'react'
 import { useState, useRef, useContext, useEffect, useLayoutEffect, TouchableOpacity, Button } from 'react'
+import {
+    NavigationContainer,
+    useFocusEffect,
+} from '@react-navigation/native';
 import { StyleSheet, View, StatusBar, FlatList, Image } from 'react-native'
 import Text from '../components/Text'
 import Post from '../components/Post'
@@ -15,13 +19,12 @@ import "firebase/firestore"
 export default function HomeScreen({ navigation }) {
     // const firebase = useContext(FirebaseContext);
     const [user, setUser] = useContext(UserContext);
-    const uid = useState({ ...user.uid });
     const [posts, setPosts] = useState([]);
     const [refresh, setRefresh] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     useEffect(() => {
         // setRefresh(true);
-        console.log("useEffect");
+        console.log("useEffectHome");
         handeRefresh();
     }, [])
 
@@ -33,14 +36,13 @@ export default function HomeScreen({ navigation }) {
                 .then((querySnapshot) => {
                     querySnapshot.forEach((doc) => {
                         if ((doc.id, " => ", doc.data()) != null)
-                            allPosts.push({ ...doc.data(), postId: doc.id, currentUserLiked: doc.data().likes.map(e => e.userId).includes(uid.toString()) });
+                            allPosts.push({ ...doc.data(), postId: doc.id, currentUserLiked: doc.data().likes.map(e => e.userId).includes(user.uid.toString()) });
                     });
-                    // console.log(allPosts);
+
                 })
                 .catch((error) => {
                     console.log("@getAllPosts: ", error);
                 });
-
             const allPostsWithUsers = [];
             await db.collection("users")
                 .get()
@@ -58,14 +60,27 @@ export default function HomeScreen({ navigation }) {
             allPostsWithUsers.sort((a, b) => a.time.toDate() < b.time.toDate() ? 1 : -1)
             setPosts(allPostsWithUsers);
         } catch (error) {
-            console.log("@getAllPosts: ", error)
+            console.log("@getUserAllPosts: ", error)
         }
 
     }
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log("useEffectHomeReturn");
+            handeRefresh();
+            //   alert('Screen was focused');
+            // Do something when the screen is focused
+            return () => {
+                // alert('Screen was unfocused');
+                // Do something when the screen is unfocused
+                // Useful for cleanup functions
+            };
+        }, [])
+    );
     const onLikePress = async (post) => {
         if (!post.currentUserLiked) {
             var postLikes = post.likes;
-            postLikes.push({ 'userId': uid.toString(), 'time': firebase.firestore.Timestamp.fromDate(new Date()) });
+            postLikes.push({ 'userId': user.uid, 'time': firebase.firestore.Timestamp.fromDate(new Date()) });
             await db.collection("posts")
                 .doc(post.postId)
                 .update({
@@ -75,7 +90,7 @@ export default function HomeScreen({ navigation }) {
             post.currentUserLiked = true;
         } else {
             var postLikes = post.likes;
-            var index = postLikes.map(e => e.userId).indexOf(uid.toString())
+            var index = postLikes.map(e => e.userId).indexOf(user.uid.toString());
             if (index !== -1)
                 postLikes.splice(index, 1);
             await db.collection("posts")
