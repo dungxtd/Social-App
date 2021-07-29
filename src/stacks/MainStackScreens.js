@@ -12,6 +12,7 @@ import HomeScreen from '../screens/HomeScreen'
 import MessageScreen from '../screens/MessageScreen'
 import NotificationScreen from '../screens/NotificationScreen'
 import ProfileScreen from '../screens/ProfileScreen'
+import FollowScreen from '../screens/FollowScreen'
 import EditProfileScreen from '../screens/EditProfileScreen'
 import PostScreen from '../screens/PostScreen'
 import CommentScreen from '../screens/CommentScreen'
@@ -33,7 +34,7 @@ const FeedScreen = ({ navigation }) => (
             name="Home"
             component={HomeScreen}
             options={{
-                title: 'Feels',
+                title: 'Home',
                 headerTitleAlign: 'left',
                 headerTitleStyle: {
                     fontSize: 18,
@@ -62,6 +63,12 @@ const FeedScreen = ({ navigation }) => (
             name="Comment"
             component={CommentScreen}
             options={({ navigation, route }) => ({})}
+        />
+        <FeedStack.Screen
+            name="Follow"
+            component={FollowScreen}
+            options={({ navigation, route }) => ({})}
+            options={{ headerShown: false }}
         />
     </FeedStack.Navigator>
 );

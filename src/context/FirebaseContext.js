@@ -21,7 +21,7 @@ const Firebase = {
         try {
             await firebase.auth().createUserWithEmailAndPassword(user.email, user.password);
             const uid = Firebase.getCurrentUser().uid
-            let profilePhotoUrl = "default", followers = 0, following = 0, posts = 0;
+            let profilePhotoUrl = "default", followers = [], following = [], posts = [];
             await db.collection("users").doc(uid).set({
                 username: user.username,
                 email: user.email,
@@ -42,9 +42,10 @@ const Firebase = {
         }
 
     },
-    createPost: async (post) => {
+    createPost: async (post, user) => {
         try {
             const uid = Firebase.getCurrentUser().uid;
+            var postsUpdate = user.posts;
             await db.collection("posts").add({
                 likes: [],
                 comments: 0,
@@ -52,7 +53,13 @@ const Firebase = {
                 time: firebase.firestore.Timestamp.fromDate(new Date()),
                 userId: uid,
                 postPhotoUrl: post.postPhotoUrl !== null ? await Firebase.uploadPostPhoto(post.postPhotoUrl) : null
+            }).then(function (docRef) {
+                postsUpdate.push(docRef.id);
             })
+            await db.collection("users").doc(uid).update({
+                "posts": postsUpdate,
+            });
+            return postsUpdate;
         } catch (error) {
             console.log("Error @createPost", error.message);
         }

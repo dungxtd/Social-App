@@ -43,7 +43,8 @@ export default function PostScreen({ navigation }) {
             console.log(postPhotoUrl);
             console.log(content);
             const post = { content: content, postPhotoUrl: postPhotoUrl };
-            await firebase.createPost(post);
+            var postsUpdate = await firebase.createPost(post, user);
+            setUser({ ...user, posts: postsUpdate });
         } catch (error) {
             console.log("Error @createPost: ", error);
         } finally {

@@ -19,10 +19,10 @@ import {
     InteractionText,
     Divider,
 } from '../components/Styled';
-export default function Post({ item, onLikePress, onCommentPress }) {
+export default function Post({ item, onLikePress, onCommentPress, onProfilePress }) {
     return (
         <View style={styles.postContainer}>
-            <View style={styles.postHeaderContainer}>
+            <Interaction style={styles.postHeaderContainer} onPress={() => onProfilePress(item)}>
                 <Image style={styles.postProfilePhoto} source={item.user.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
                     : {
                         uri: item.user.profilePhotoUrl
@@ -31,7 +31,7 @@ export default function Post({ item, onLikePress, onCommentPress }) {
                     <Text bold medium> {item.user.username} </Text>
                     <Text small> {Moment(item.time.toDate()).format('HH:mm DD/MM/YYYY').toString()} </Text>
                 </View>
-            </View>
+            </Interaction>
             <View style={styles.post}>
                 {item.postPhotoUrl ? <Image style={styles.postImage} source={{ uri: item.postPhotoUrl }} /> : null}
                 <View style={styles.postTitle}>

@@ -1,91 +1,99 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native'
 import Text from '../components/Text'
 import { Entypo, Ionicons, Feather, MaterialIcons } from '@expo/vector-icons'
 import { UserContext } from '../context/UserContext'
 import { FirebaseContext } from '../context/FirebaseContext'
-
-export default function ProfileScreen({ navigation }) {
+import firebase from 'firebase'
+import "firebase/firestore"
+const db = firebase.firestore();
+export default function FollowScreen({ route, navigation }) {
 
     const [user, setUser] = useContext(UserContext)
     const firebase = useContext(FirebaseContext)
-    const logOut = async () => {
-        const loggedOut = await firebase.logOut();
-        if (loggedOut) {
-            setUser(state => ({ ...state, isLoggedIn: false }))
+    const [item, setItem] = useState({ ...route.params.post });
+    const [comment, setComment] = useState([]);
+    const [refresh, setRefresh] = useState(false);
+    const onFollowPress = async () => {
+        var followers = item.user.followers;
+        var following = user.following;
+        var itemUpdate = { ...item };
+        if (!item.user.Isfollowing) {
+            following.push(item.userId);
+            followers.push(user.uid);
+            await db.collection("users")
+                .doc(item.userId)
+                .update({
+                    "followers": followers
+                });
+            await db.collection("users").doc(user.uid)
+                .update({
+                    "following": following
+                });
+
         }
+        else {
+            var index = followers.indexOf(user.uid.toString());
+            if (index !== -1)
+                followers.splice(index, 1);
+            var index1 = following.indexOf(item.userId);
+            if (index1 !== -1)
+                following.splice(index, 1);
+            await db.collection("users")
+                .doc(item.userId)
+                .update({
+                    "followers": followers
+                })
+            await db.collection("users").doc(user.uid)
+                .update({
+                    "following": following
+                })
+
+        }
+        itemUpdate.user.Isfollowing = !itemUpdate.user.Isfollowing;
+        setItem(itemUpdate);
+        setUser({ ...user, following: following });
     }
-
-    // useEffect(() => {
-    //     setTimeout(async () => {
-    //         const user = firebase.getCurrentUser();
-    //         if (user) {
-    //             const userInfo = await firebase.getUserInfo(user.uid);
-    //             setUser({
-    //                 isLoggedIn: true,
-    //                 email: userInfo.email,
-    //                 uid: user.uid,
-    //                 bio: userInfo.bio,
-    //                 name: userInfo.name,
-    //                 posts: userInfo.posts,
-    //                 followers: userInfo.followers,
-    //                 following: userInfo.following,
-    //                 username: userInfo.username,
-    //                 profilePhotoUrl: userInfo.profilePhotoUrl
-    //             })
-    //         }
-    //     }, 500)
-    // }, [])
-
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <View style={styles.profileUsernameTitle}>
-                    <Text medium bold center> {user.username} </Text>
+                    <Text medium bold center> {item.user.username} </Text>
                     <MaterialIcons name={'verified'} size={16} color={'#40a0ed'} style={{ paddingTop: 2 }} />
                 </View>
                 <View style={styles.profileInfoContainer}>
                     <View style={styles.profilePhotoContainer}>
-                        <Image style={styles.profilePhoto} source={user.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
+                        <Image style={styles.profilePhoto} source={item.user.profilePhotoUrl === "default" ? require("../../assets/defaultProfilePhoto.jpg")
                             : {
-                                uri: user.profilePhotoUrl
+                                uri: item.user.profilePhotoUrl
                             }} />
                     </View>
                     <View style={styles.startsContainer}>
                         <View style={styles.startContainer}>
-                            <Text bold center>{user.posts.length}</Text>
+                            <Text bold center>{item.user.posts.length}</Text>
                             <Text center small>Posts</Text>
                         </View>
                         <View style={styles.startContainer}>
-                            <Text bold center>{user.followers.length}</Text>
+                            <Text bold center>{item.user.followers.length}</Text>
                             <Text center small>Followers</Text>
                         </View>
                         <View style={styles.startContainer}>
-                            <Text bold center>{user.following.length}</Text>
+                            <Text bold center>{item.user.following.length}</Text>
                             <Text center small>Following</Text>
                         </View>
                     </View>
                 </View>
-                {/* <View style={styles.wrapPostLine}>
-                    <View style={styles.postLine}></View>
-                </View> */}
                 <View style={styles.profileNameAndDescription}>
-                    <Text bold>{user.name}</Text>
-                    <Text style={{ paddingTop: 2, }}>{user.bio}</Text>
+                    <Text bold>{item.user.name}</Text>
+                    <Text style={{ paddingTop: 2, }}>{item.user.bio}</Text>
                 </View>
-                <TouchableOpacity style={styles.buttonEditProfile} onPress={() => {
-                    navigation.navigate("EditProfile")
-                }}>
-                    <Text bold>Edit Profile</Text>
+                <TouchableOpacity style={!item.user.Isfollowing ? styles.buttonFollower : styles.buttonFollowing} onPress={() => onFollowPress()}>
+                    <Text bold>{!item.user.Isfollowing ? "Follow" : "Following"}</Text>
                 </TouchableOpacity>
                 <View style={styles.wrapProfileLine}>
                     <View style={styles.profileLine}></View>
                 </View>
             </View>
-            <TouchableOpacity style={styles.buttonEditProfile} onPress={logOut} >
-                <Text medium bold color="red">Log out</Text>
-            </TouchableOpacity>
-
         </View>
     )
 }
@@ -155,7 +163,18 @@ const styles = StyleSheet.create({
         borderColor: "#dedede",
         borderBottomWidth: 0.5,
     },
-    buttonEditProfile: {
+    buttonFollower: {
+        width: '100%',
+        height: 36,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: "#dedede",
+        borderWidth: 1,
+        borderRadius: 6,
+        marginTop: 16,
+        backgroundColor: 'white'
+    },
+    buttonFollowing: {
         width: '100%',
         height: 36,
         alignItems: 'center',

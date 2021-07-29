@@ -30,13 +30,15 @@ export default function HomeScreen({ navigation }) {
 
     handeRefresh = async () => {
         const allPosts = [];
+        const myUid = user.uid;
+
         try {
             await db.collection("posts").where("userId", "!=", "")
                 .get()
                 .then((querySnapshot) => {
                     querySnapshot.forEach((doc) => {
-                        if ((doc.id, " => ", doc.data()) != null)
-                            allPosts.push({ ...doc.data(), postId: doc.id, currentUserLiked: doc.data().likes.map(e => e.userId).includes(user.uid.toString()) });
+                        if ((doc.id, " => ", doc.data()) != null && (user.following.includes(doc.data().userId) || doc.data().userId.toString() == myUid))
+                            allPosts.push({ ...doc.data(), postId: doc.id, currentUserLiked: doc.data().likes.map(e => e.userId).includes(myUid) });
                     });
 
                 })
@@ -49,7 +51,15 @@ export default function HomeScreen({ navigation }) {
                 .then((querySnapshot) => {
                     allPosts.forEach((post) => {
                         querySnapshot.forEach((doc) => {
-                            if (doc.id == post.userId) allPostsWithUsers.push({ ...post, user: doc.data() });
+                            if (doc.id == post.userId) {
+                                var user = { ...doc.data() };
+                                console.log(doc.data().followers);
+                                if (doc.data().followers.includes(myUid)) {
+                                    user.Isfollowing = true;
+                                }
+                                else user.Isfollowing = false;
+                                allPostsWithUsers.push({ ...post, user: user });
+                            }
                         });
                     })
                 })
@@ -108,6 +118,14 @@ export default function HomeScreen({ navigation }) {
             post: post
         });
     }
+    const onProfilePress = async (post) => {
+        if (post.userId != user.uid)
+            navigation.navigate('Follow', {
+                post: post
+            });
+        else navigation.navigate('Profile', {
+        });
+    }
     const renderItem = ({ item }) => {
         return (
             <Post
@@ -115,6 +133,7 @@ export default function HomeScreen({ navigation }) {
                 onPress={() => setSelectedPost(item)}
                 onLikePress={onLikePress}
                 onCommentPress={onCommentPress}
+                onProfilePress={onProfilePress}
             />
         );
     };
