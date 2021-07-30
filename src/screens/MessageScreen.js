@@ -77,7 +77,7 @@ export default function MessageScreen({ navigation }) {
             });
             // handeSearchUser();
             setListUser([]);
-
+            setSearchText("");
 
             //   alert('Screen was focused');
             // Do something when the screen is focused

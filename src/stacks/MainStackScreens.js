@@ -16,10 +16,12 @@ import FollowScreen from '../screens/FollowScreen'
 import EditProfileScreen from '../screens/EditProfileScreen'
 import PostScreen from '../screens/PostScreen'
 import CommentScreen from '../screens/CommentScreen'
+import ChatScreen from '../screens/ChatScreen'
 const MainStack = createBottomTabNavigator();
 const FeedStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const SearchStack = createStackNavigator();
+const ChatStack = createStackNavigator();
 const tabBarOptions = {
     showLabel: false,
     showIcon: true,
@@ -103,6 +105,21 @@ const SearchStackScreen = ({ navigation }) => (
         />
     </SearchStack.Navigator>
 );
+const ChatStackScreen = ({ navigation }) => (
+    <ChatStack.Navigator initialRouteName="Search">
+        <ChatStack.Screen
+            name="Search"
+            component={NotificationScreen}
+            options={{ headerShown: false }}
+        />
+        <ChatStack.Screen
+            name="FollowUser"
+            component={ChatScreen}
+            options={({ navigation, route }) => ({})}
+            options={{ headerShown: false }}
+        />
+    </ChatStack.Navigator>
+);
 export default function MainStackScreen() {
 
     return (
@@ -134,7 +151,7 @@ export default function MainStackScreen() {
                     ),
                 })}
             />
-            <MainStack.Screen name="Notification" component={NotificationScreen}
+            <MainStack.Screen name="Notification" component={ChatStackScreen}
                 options={({ route }) => ({
                     tabBarIcon: ({ focused }) => (
                         <Ionicons
