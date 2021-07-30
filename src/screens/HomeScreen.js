@@ -31,7 +31,6 @@ export default function HomeScreen({ navigation }) {
     handeRefresh = async () => {
         const allPosts = [];
         const myUid = user.uid;
-
         try {
             await db.collection("posts").where("userId", "!=", "")
                 .get()
@@ -40,7 +39,6 @@ export default function HomeScreen({ navigation }) {
                         if ((doc.id, " => ", doc.data()) != null && (user.following.includes(doc.data().userId) || doc.data().userId.toString() == myUid))
                             allPosts.push({ ...doc.data(), postId: doc.id, currentUserLiked: doc.data().likes.map(e => e.userId).includes(myUid) });
                     });
-
                 })
                 .catch((error) => {
                     console.log("@getAllPosts: ", error);
@@ -53,7 +51,6 @@ export default function HomeScreen({ navigation }) {
                         querySnapshot.forEach((doc) => {
                             if (doc.id == post.userId) {
                                 var user = { ...doc.data() };
-                                console.log(doc.data().followers);
                                 if (doc.data().followers.includes(myUid)) {
                                     user.Isfollowing = true;
                                 }
@@ -78,6 +75,8 @@ export default function HomeScreen({ navigation }) {
         React.useCallback(() => {
             console.log("useEffectHomeReturn");
             handeRefresh();
+            navigation.navigate('Home', {
+            });
             //   alert('Screen was focused');
             // Do something when the screen is focused
             return () => {

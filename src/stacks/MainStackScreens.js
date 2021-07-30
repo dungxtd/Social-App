@@ -19,6 +19,7 @@ import CommentScreen from '../screens/CommentScreen'
 const MainStack = createBottomTabNavigator();
 const FeedStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+const SearchStack = createStackNavigator();
 const tabBarOptions = {
     showLabel: false,
     showIcon: true,
@@ -80,13 +81,28 @@ const ProfileStackScreen = ({ navigation }) => (
             options={{ headerShown: false }}
         />
         <ProfileStack.Screen
-            name="EditProfile"
+            name="Follow"
             component={EditProfileScreen}
             options={({ navigation, route }) => ({})}
+            options={{ headerShown: false }}
         />
     </ProfileStack.Navigator>
 );
-
+const SearchStackScreen = ({ navigation }) => (
+    <SearchStack.Navigator initialRouteName="Search">
+        <SearchStack.Screen
+            name="Search"
+            component={MessageScreen}
+            options={{ headerShown: false }}
+        />
+        <SearchStack.Screen
+            name="FollowUser"
+            component={FollowScreen}
+            options={({ navigation, route }) => ({})}
+            options={{ headerShown: false }}
+        />
+    </SearchStack.Navigator>
+);
 export default function MainStackScreen() {
 
     return (
@@ -105,11 +121,13 @@ export default function MainStackScreen() {
                     ),
                 })}
             />
-            <MainStack.Screen name="Message" component={MessageScreen}
+            <MainStack.Screen
+                name="Message"
+                component={SearchStackScreen}
                 options={({ route }) => ({
                     tabBarIcon: ({ focused }) => (
-                        <AntDesign
-                            name={'message1'}
+                        <Ionicons
+                            name={'search-outline'}
                             size={24}
                             color={focused ? '#111' : '#BDBDBD'}
                         />
